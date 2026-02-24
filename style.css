@@ -4,13 +4,14 @@
     margin: 0;
     padding: 0;
     font-family: 'Press Start 2P', monospace;
-    user-select: none; /* Wichtig für Mobile, damit kein Text markiert wird */
-    -webkit-tap-highlight-color: transparent; /* Entfernt das blaue Flackern beim Tippen auf iOS */
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
+/* Weicheres, tieferes Retro-Nachtblau statt hartem Schwarz */
 body {
-    background-color: #080808; /* Ein noch tieferes Schwarz für den unendlichen Nebel */
-    color: #e0e0e0;
+    background-color: #181425; 
+    color: #f4f4f4;
     width: 100vw;
     height: 100vh;
     overflow: hidden;
@@ -21,10 +22,11 @@ body {
 /* --- UI ELEMENTE & OVERLAYS --- */
 .hidden { display: none !important; }
 
+/* Das Overlay dimmt den Hintergrund jetzt leicht bläulich ab */
 .overlay {
     position: absolute;
     top: 0; left: 0; width: 100vw; height: 100vh;
-    background-color: rgba(0, 0, 0, 0.85);
+    background-color: rgba(24, 20, 37, 0.85);
     z-index: 1000;
     display: flex;
     flex-direction: column;
@@ -32,58 +34,82 @@ body {
     align-items: center;
 }
 
-#title {
-    font-size: 24px;
+/* Der Titel schwebt jetzt niedlich auf und ab */
+.cute-title {
+    font-size: 28px;
     margin-bottom: 40px;
-    color: #fff;
-    text-shadow: 4px 4px 0px #333;
+    color: #e4a672; /* Weiches Retro-Orange */
+    text-shadow: 4px 4px 0px #262b44;
     position: absolute;
-    /* Respektiert die Kameraaussparung oben */
-    top: max(30px, env(safe-area-inset-top));
-    left: 20px;
+    top: max(40px, env(safe-area-inset-top));
+    left: 50%;
+    transform: translateX(-50%);
+    animation: float 3s ease-in-out infinite;
 }
 
-.menu-buttons { display: flex; flex-direction: column; gap: 20px; margin-bottom: 40px; }
+@keyframes float {
+    0% { transform: translate(-50%, 0px); }
+    50% { transform: translate(-50%, -8px); }
+    100% { transform: translate(-50%, 0px); }
+}
+
+.menu-buttons { display: flex; flex-direction: column; gap: 20px; margin-bottom: 40px; margin-top: 60px; }
 .menu-small-buttons { display: flex; gap: 15px; }
 
-/* Pixel-Panels (für Bedürfnisse und Dialoge) */
+/* Pixel-Panels (für Bedürfnisse und Dialoge) - Jetzt weicher und freundlicher */
 .pixel-panel {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #1a1a1a;
-    border: 4px solid #4a4a4a;
-    padding: 20px;
+    background-color: #262b44; /* Dunkles, weiches Blau */
+    border: 4px solid #5a6988; /* Hellerer Rahmen */
+    border-radius: 8px; /* Leicht abgerundet für den Cute-Faktor */
+    padding: 24px;
     z-index: 500;
     width: 85%;
     max-width: 320px;
-    box-shadow: 6px 6px 0px rgba(0,0,0,0.9);
+    box-shadow: 0px 8px 0px rgba(0,0,0,0.4);
+    text-align: center;
 }
 
-.pixel-panel h3 { font-size: 12px; margin-bottom: 15px; border-bottom: 2px solid #4a4a4a; padding-bottom: 8px; color: #fff; }
-.pixel-panel p { font-size: 9px; line-height: 1.6; margin-bottom: 15px; color: #ccc; }
+.pixel-panel h3 { 
+    font-size: 12px; 
+    margin-bottom: 15px; 
+    color: #e4a672; 
+    padding-bottom: 10px;
+    border-bottom: 2px dashed #5a6988;
+}
+
+.pixel-panel p { 
+    font-size: 9px; 
+    line-height: 1.8; 
+    margin-bottom: 20px; 
+    color: #8b9bb4; 
+}
 
 /* Bedürfnis-Balken */
-.need-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 8px; }
-.pixel-bar { height: 10px; width: 55%; background-color: #333; position: relative; border: 2px solid #222; }
+.need-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 8px; color: #f4f4f4;}
+.pixel-bar { height: 10px; width: 55%; background-color: #181425; position: relative; border: 2px solid #5a6988; border-radius: 4px; overflow: hidden; }
 .pixel-bar::after { content: ''; position: absolute; top: 0; left: 0; height: 100%; background-color: #7bc34a; width: 100%; }
-.pixel-hint { font-size: 8px; color: #888; margin-top: 15px; margin-bottom: 15px; font-style: italic; line-height: 1.4; }
+.pixel-hint { font-size: 8px; color: #8b9bb4; margin-top: 15px; margin-bottom: 15px; font-style: italic; line-height: 1.4; }
 
 /* --- BEDÜRFNIS-INDIKATOR FARBEN --- */
 #needs-indicator {
     position: absolute; 
-    /* Abstand von oben, umgeht die iOS Notch */
     top: max(20px, env(safe-area-inset-top)); 
     left: 20px; 
-    width: 16px; /* Etwas grösser gemacht, damit man ihn besser sieht */
+    width: 16px; 
     height: 16px;
     z-index: 50; 
     cursor: pointer; 
-    border: 2px solid #000;
-    box-shadow: 2px 2px 0px rgba(0,0,0,0.8);
+    border: 3px solid #f4f4f4; /* Weisser, poppiger Rand */
+    border-radius: 4px;
+    box-shadow: 0px 4px 0px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
 }
 
-/* Die 5 Zustände gemäss GDD */
+#needs-indicator:active { transform: scale(0.9); }
+
 .status-100 { background-color: #1a5c00; } 
 .status-75 { background-color: #7bc34a; }  
 .status-50 { background-color: #e8c84a; }  
@@ -92,51 +118,69 @@ body {
 
 /* --- BUTTONS --- */
 .pixel-btn {
-    background-color: #2b2b2b; color: #eee; border: 2px solid #5a5a5a;
-    padding: 12px; font-size: 10px; cursor: pointer; text-transform: uppercase;
-    box-shadow: 3px 3px 0px #000;
+    background-color: #3a4466; 
+    color: #f4f4f4; 
+    border: 2px solid #5a6988;
+    border-radius: 6px;
+    padding: 12px; 
+    font-size: 10px; 
+    cursor: pointer; 
+    text-transform: uppercase;
+    box-shadow: 0px 4px 0px #181425;
+    transition: all 0.1s;
 }
-.pixel-btn:active { box-shadow: 0px 0px 0px #000; transform: translate(3px, 3px); }
-.pixel-btn.large { font-size: 12px; padding: 15px 25px; }
+
+.pixel-btn:active { 
+    box-shadow: 0px 0px 0px #181425; 
+    transform: translateY(4px); 
+    background-color: #e4a672;
+    color: #181425;
+}
+
+.pixel-btn.large { font-size: 12px; padding: 16px 24px; }
 .pixel-btn.small { font-size: 8px; padding: 10px; }
 
+/* Buttons im Entscheidungs-Panel */
+.decision-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 /* --- SPIELFLÄCHE --- */
-#game-container { flex-grow: 1; width: 100%; display: flex; background-color: #080808; }
+#game-container { flex-grow: 1; width: 100%; display: flex; background-color: #181425; }
 #game-canvas { width: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
 
 /* --- DAS NEUE SCHWEBENDE iOS-PIXEL-DOCK --- */
 #ios-pixel-dock {
     position: fixed;
-    /* Abstand vom unteren Rand, weicht dem iOS Home-Balken aus */
     bottom: max(20px, env(safe-area-inset-bottom));
     left: 50%;
     transform: translateX(-50%);
-    background-color: #1a1a1a;
-    border: 4px solid #333;
+    background-color: #262b44;
+    border: 4px solid #5a6988;
+    border-radius: 16px; /* Pillen-Form */
     display: flex;
-    padding: 4px;
-    gap: 4px;
+    padding: 6px;
+    gap: 6px;
     z-index: 50;
-    box-shadow: 0px 8px 0px rgba(0,0,0,0.6);
+    box-shadow: 0px 6px 0px rgba(0,0,0,0.4);
 }
 
 .dock-btn {
     background-color: transparent;
-    color: #888;
+    color: #8b9bb4;
     border: none;
-    padding: 12px 16px;
+    border-radius: 10px;
+    padding: 14px 20px;
     font-size: 10px;
     cursor: pointer;
     text-transform: uppercase;
+    transition: all 0.2s;
 }
 
 .dock-btn.active {
-    background-color: #333;
-    color: #fff;
-    border: 2px solid #555;
-    margin: -2px; /* Ausgleich für den Rahmen, damit es nicht springt */
+    background-color: #e4a672;
+    color: #181425;
+    font-weight: bold;
 }
-
-/* Lade-Muster */
-.loading-pattern { width: 40px; height: 40px; background-color: #7bc34a; animation: pulse 1s infinite alternate; }
-@keyframes pulse { from { transform: scale(1); opacity: 0.5; } to { transform: scale(1.2); opacity: 1; } }
