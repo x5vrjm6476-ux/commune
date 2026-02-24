@@ -1,5 +1,5 @@
 // ==========================================
-// COMMUNE - GAME ENGINE (CUTE RETRO EDITION)
+// COMMUNE - GAME ENGINE (CUTE RETRO EDITION V2)
 // ==========================================
 
 const canvas = document.getElementById('game-canvas');
@@ -7,14 +7,14 @@ const ctx = canvas.getContext('2d');
 const TILE_SIZE = 16;
 
 // --- WEICHE RETRO-FARBPALETTE ---
-const C_FOG = '#181425';     // Nachtblau
-const C_LAND = '#4f7754';    // Weiches Grasgrün
-const C_WOOD = '#2e453b';    // Dunkler Nadelwald
-const C_WATER = '#5a9ebf';   // Sanftes Wasser
-const C_WATER_ALT = '#6cb4d4'; // Wasser-Animation
-const C_STONE = '#737a8c';   // Bläuliches Grau
-const C_RUIN = '#6b4c7a';    // Mystisches Lila
-const C_ROAD = '#d2b99b';    // Sandiger Weg
+const C_FOG = '#181425';     
+const C_LAND = '#4f7754';    
+const C_WOOD = '#2e453b';    
+const C_WATER = '#5a9ebf';   
+const C_WATER_ALT = '#6cb4d4'; 
+const C_STONE = '#737a8c';   
+const C_RUIN = '#6b4c7a';    
+const C_ROAD = '#d2b99b';    
 
 // --- DOM ELEMENTE ---
 const uiInd = document.getElementById('needs-indicator');
@@ -26,7 +26,6 @@ const barResources = document.getElementById('bar-resources');
 const barConnection = document.getElementById('bar-connection');
 const textHint = document.getElementById('needs-hint');
 
-// Entscheidungs-Panel
 const dialogDecision = document.getElementById('decision-dialog');
 const decTitle = document.getElementById('decision-title');
 const decText = document.getElementById('decision-text');
@@ -37,15 +36,12 @@ const btnDecB = document.getElementById('btn-decision-b');
 let camera = { x: 0, y: 0 };
 let isDragging = false, hasDragged = false;
 let dragStart = { x: 0, y: 0 }, cameraStart = { x: 0, y: 0 };
-let isDeciding = false; // Blockiert das Spiel während einer Entscheidung
-let tickCount = 0; // Für Animationen
+let isDeciding = false; 
+let tickCount = 0; 
 
-// Welt-Daten
 let world = new Map();
 let buildings = new Map();
-let pendingTile = null; // Speichert die Koordinaten für die aktuelle Entscheidung
-
-// Der Game-Loop für automatisches Wachstum
+let pendingTile = null; 
 let growthInterval = null;
 
 // --- INITIALISIERUNG ---
@@ -57,14 +53,16 @@ function initGame() {
         iosDock.classList.remove('hidden');
         uiInd.classList.remove('hidden');
     } else {
+        // Größeres Startgebiet, damit sie anfangs nicht stecken bleiben
         for (let x = -2; x <= 2; x++) {
             for (let y = -2; y <= 2; y++) {
                 world.set(`${x},${y}`, { type: 'land', color: C_LAND });
             }
         }
+        // Ein kleiner lockerer Kern in der Mitte
         buildings.set(`0,0`, { genes: ['GEMEINSCHAFT'] });
         buildings.set(`1,0`, { genes: ['GEMEINSCHAFT'] });
-        buildings.set(`0,1`, { genes: ['GEMEINSCHAFT'] }); // Start-Kern (3 Gebäude)
+        buildings.set(`0,1`, { genes: ['GEMEINSCHAFT'] }); 
     }
     resizeCanvas();
     updateNeeds();
@@ -73,7 +71,6 @@ function initGame() {
 
 function startGameLoop() {
     if (growthInterval) clearInterval(growthInterval);
-    // Alle 2 Sekunden wächst die Welt organisch
     growthInterval = setInterval(() => {
         if (!isDeciding) {
             processGrowth();
@@ -119,23 +116,22 @@ function isAdjacent(x, y, mapToCheck) {
 
 // --- ERKUNDEN & ENTSCHEIDEN ---
 function generateResource(x, y) {
-    const dist = Math.abs(x) + Math.abs(y);
     const rand = Math.random();
     
-    if (rand < 0.05 + (dist * 0.005)) return { type: 'ruin', name: 'Ruine', color: C_RUIN, gene: 'WISSEN' };
-    if (rand < 0.15 + (dist * 0.01)) return { type: 'mountain', name: 'Gebirge', color: C_STONE, gene: 'STEIN' };
-    if (rand < 0.30 + (dist * 0.01)) return { type: 'forest', name: 'Wald', color: C_WOOD, gene: 'HOLZ' };
-    if (rand < 0.40) return { type: 'river', name: 'Fluss', color: C_WATER, gene: 'WASSER' };
+    // MASSIVES UPDATE: Du findest jetzt super schnell Flüsse, Berge und Ruinen!
+    if (rand < 0.15) return { type: 'ruin', name: 'Ruine', color: C_RUIN, gene: 'WISSEN' };
+    if (rand < 0.35) return { type: 'mountain', name: 'Gebirge', color: C_STONE, gene: 'STEIN' };
+    if (rand < 0.55) return { type: 'forest', name: 'Wald', color: C_WOOD, gene: 'HOLZ' };
+    if (rand < 0.75) return { type: 'river', name: 'Fluss', color: C_WATER, gene: 'WASSER' };
     return { type: 'land', name: 'Leeres Land', color: C_LAND, gene: 'ERDE' };
 }
 
 function handleInteraction(screenX, screenY) {
-    if (isDeciding) return; // Nichts tun, wenn Dialog offen ist
+    if (isDeciding) return; 
 
     const coords = getGridCoords(screenX, screenY);
     const key = `${coords.x},${coords.y}`;
 
-    // Erkunden (Nebel anklicken)
     if (!world.has(key) && isAdjacent(coords.x, coords.y, world)) {
         const discovered = generateResource(coords.x, coords.y);
         pendingTile = { key: key, x: coords.x, y: coords.y, resource: discovered };
@@ -146,31 +142,30 @@ function handleInteraction(screenX, screenY) {
 function showDecisionDialog(resource) {
     isDeciding = true;
     dialogDecision.classList.remove('hidden');
-    decTitle.innerText = `Ein ${resource.name}!`;
+    decTitle.innerText = `Ein(e) ${resource.name}!`;
 
     if (resource.type === 'forest') {
-        decText.innerText = "Ein alter Nadelwald. Was ist dein Wille?";
-        btnDecA.innerText = "Natur belassen (Liefert Holz-Gen)";
-        btnDecB.innerText = "Abholzen (Schafft Bauplatz)";
+        decText.innerText = "Ein dichter Wald taucht auf.";
+        btnDecA.innerText = "Bewahren (Spendet Holz-Gene)";
+        btnDecB.innerText = "Freimachen (Gibt Platz zum Bauen)";
     } else if (resource.type === 'mountain') {
-        decText.innerText = "Massiver Fels. Sollen wir ihn nutzen?";
-        btnDecA.innerText = "Belassen (Liefert Stein-Gen)";
-        btnDecB.innerText = "Steinbruch (Schafft Bauplatz)";
+        decText.innerText = "Unüberwindbarer Fels.";
+        btnDecA.innerText = "Stehenlassen (Spendet Stein-Gene)";
+        btnDecB.innerText = "Einbnen (Macht daraus Bauland)";
     } else if (resource.type === 'river') {
-        decText.innerText = "Frisches Wasser kreuzt den Weg.";
-        btnDecA.innerText = "Fliessen lassen (Wasser-Gen)";
-        btnDecB.innerText = "Brücke bauen (Verbindung)";
+        decText.innerText = "Klares Wasser fliesst hier.";
+        btnDecA.innerText = "Flusslauf ehren (Wasser-Gene)";
+        btnDecB.innerText = "Trockenlegen (Bauland)";
     } else if (resource.type === 'ruin') {
         decText.innerText = "Geheimnisvolle Steine aus alter Zeit.";
-        btnDecA.innerText = "Beobachten (Wissen-Gen)";
-        btnDecB.innerText = "Ausgraben (Bauplatz)";
+        btnDecA.innerText = "Studieren (Wissen-Gene)";
+        btnDecB.innerText = "Abtragen (Bauland)";
     } else {
-        decText.innerText = "Fruchtbares, grünes Land.";
-        btnDecA.innerText = "Naturraum belassen";
-        btnDecB.innerText = "Für Siedler freigeben";
+        decText.innerText = "Grünes, fruchtbares Land.";
+        btnDecA.innerText = "Als Natur belassen";
+        btnDecB.innerText = "Für die Stadt freigeben";
     }
 
-    // Event Listener neu binden (alte entfernen durch Klonen)
     const newBtnA = btnDecA.cloneNode(true);
     const newBtnB = btnDecB.cloneNode(true);
     btnDecA.parentNode.replaceChild(newBtnA, btnDecA);
@@ -185,15 +180,12 @@ function resolveDecision(choice, resource) {
     isDeciding = false;
 
     if (choice === 'A') {
-        // Option A: Ressource belassen (gibt Gene ab)
+        // Option A: Ressource bleibt als Hindernis, spendet aber Gene [cite: 71, 73]
         world.set(pendingTile.key, resource);
     } else {
-        // Option B: Platz machen / Bebauen
-        world.set(pendingTile.key, { type: 'land', name: 'Land', color: C_LAND, gene: 'ERDE' });
-        // Setzt sofort ein kleines Basis-Gebäude dorthin, wenn es neben anderen steht
-        if (isAdjacent(pendingTile.x, pendingTile.y, buildings)) {
-            buildings.set(pendingTile.key, { genes: ['ERDE', resource.gene] });
-        }
+        // Option B: Wir machen Platz. Es entsteht normales freies Bauland.
+        // Keine Gebäude werden manuell gebaut! Nur Platz geschaffen.
+        world.set(pendingTile.key, { type: 'land', name: 'Freies Land', color: '#5c6b56', gene: resource.gene });
     }
 
     pendingTile = null;
@@ -210,11 +202,11 @@ function processGrowth() {
         const [x, y] = key.split(',').map(Number);
         const bldgNeighbors = getNeighbors(x, y, buildings).filter(n => n.v !== undefined);
         
-        // KERN-Bedingung: 2 oder mehr Nachbarn (also 3er Cluster)
+        // KERN-Bedingung: Mindestens 2 Nachbarn
         if (bldgNeighbors.length >= 2) {
-            // Eine 10% Chance pro Tick, dass dieser Kern sich teilt
-            if (Math.random() < 0.10) {
-                // Finde ein leeres Feld neben diesem Gebäude
+            // Chance erhöht auf 20%, damit es flüssiger läuft
+            if (Math.random() < 0.20) {
+                // Suche freies Land (Berge/Flüsse blockieren organisches Bauen!) [cite: 73]
                 const emptyLands = getNeighbors(x, y, world).filter(n => 
                     n.v !== undefined && 
                     n.v.type === 'land' && 
@@ -224,16 +216,17 @@ function processGrowth() {
                 if (emptyLands.length > 0) {
                     const target = emptyLands[Math.floor(Math.random() * emptyLands.length)];
                     
-                    // Sammle Gene der Umgebung für das neue Gebäude
                     let newGenes = [...bldg.genes];
                     getNeighbors(target.x, target.y, world).forEach(wn => {
                         if (wn.v && wn.v.gene && !newGenes.includes(wn.v.gene)) newGenes.push(wn.v.gene);
                     });
 
-                    // Verhindere unendlichen Wucher: Bauen nur, wenn das Zielfeld NICHT schon umzingelt ist
+                    // Verhindert den "Riesen-Klumpen": Wir bauen nur dort, wo maximal 2 andere Häuser stehen
                     const targetBldgNeighbors = getNeighbors(target.x, target.y, buildings).filter(n => n.v !== undefined);
                     if (targetBldgNeighbors.length <= 2) {
-                        newBuildings.push({ key: target.k, genes: newGenes });
+                        if (!newBuildings.some(nb => nb.key === target.k)) {
+                            newBuildings.push({ key: target.k, genes: newGenes });
+                        }
                     }
                 }
             }
@@ -252,29 +245,29 @@ function drawBuilding(x, y, bldg) {
     const screenX = camera.x + (x * TILE_SIZE);
     const screenY = camera.y + (y * TILE_SIZE);
 
-    // Gebäude sind etwas kleiner als das Feld (12x12 statt 16x16), so entsteht der "Dorf"-Look
-    const bOffset = 2; 
+    // Gebäude sind jetzt DEUTLICH kleiner (Offset 3), man sieht schöne Gassen!
+    const bOffset = 3; 
     const bSize = TILE_SIZE - (bOffset * 2);
 
-    let baseColor = '#e4a672'; // Standard (Erde/Holz)
-    let roofColor = '#bf6a5c'; // Ziegelrot
+    let baseColor = '#e4a672'; 
+    let roofColor = '#bf6a5c'; 
 
     if (bldg.genes.includes('STEIN')) { baseColor = '#949bb0'; roofColor = '#5a6988'; }
     if (bldg.genes.includes('WISSEN')) { baseColor = '#d9c5e3'; roofColor = '#6b4c7a'; }
+    if (bldg.genes.includes('WASSER')) { baseColor = '#81c0c2'; roofColor = '#3a7985'; }
 
-    // Pulsier-Animation für einsame Gebäude (Bedürfnis nach Verbindung)
     const isConnected = getNeighbors(x, y, buildings).some(n => n.v !== undefined);
     let animOffset = (!isConnected && tickCount % 2 === 0) ? 1 : 0;
 
-    // Haus zeichnen
+    // Basis
     ctx.fillStyle = baseColor;
     ctx.fillRect(screenX + bOffset, screenY + bOffset - animOffset, bSize, bSize);
 
-    // Dach zeichnen
+    // Dach
     ctx.fillStyle = roofColor;
-    ctx.fillRect(screenX + bOffset - 1, screenY + bOffset - animOffset - 2, bSize + 2, 4);
+    ctx.fillRect(screenX + bOffset - 1, screenY + bOffset - animOffset - 1, bSize + 2, 4);
 
-    // Kleines Fenster
+    // Fenster
     ctx.fillStyle = '#262b44';
     ctx.fillRect(screenX + bOffset + 2, screenY + bOffset + 4 - animOffset, 3, 3);
 }
@@ -286,8 +279,8 @@ function drawConnections() {
         const screenX = camera.x + (x * TILE_SIZE);
         const screenY = camera.y + (y * TILE_SIZE);
 
-        if (buildings.has(`${x+1},${y}`)) ctx.fillRect(screenX + 12, screenY + 6, 6, 4);
-        if (buildings.has(`${x},${y+1}`)) ctx.fillRect(screenX + 6, screenY + 12, 4, 6);
+        if (buildings.has(`${x+1},${y}`)) ctx.fillRect(screenX + 11, screenY + 7, 5, 2);
+        if (buildings.has(`${x},${y+1}`)) ctx.fillRect(screenX + 7, screenY + 11, 2, 5);
     }
 }
 
@@ -309,7 +302,6 @@ function draw() {
                 const sx = camera.x + (x * TILE_SIZE);
                 const sy = camera.y + (y * TILE_SIZE);
                 
-                // Wasser Animation
                 if (tile.type === 'river') {
                     ctx.fillStyle = (tickCount % 2 === 0) ? C_WATER : C_WATER_ALT;
                 } else {
@@ -318,11 +310,11 @@ function draw() {
                 
                 ctx.fillRect(sx, sy, TILE_SIZE, TILE_SIZE);
                 
-                // Leichte, niedliche Punkte auf Land und Wald
+                // Kleine Deko-Punkte
                 if (tile.type === 'land' || tile.type === 'forest') {
                     ctx.fillStyle = 'rgba(0,0,0,0.1)';
-                    ctx.fillRect(sx + 2, sy + 2, 2, 2);
-                    ctx.fillRect(sx + 10, sy + 12, 2, 2);
+                    ctx.fillRect(sx + 3, sy + 3, 2, 2);
+                    ctx.fillRect(sx + 10, sy + 10, 2, 2);
                 }
             }
         }
@@ -330,7 +322,6 @@ function draw() {
 
     drawConnections();
 
-    // Gebäude
     for (let x = startCol; x <= endCol; x++) {
         for (let y = startRow; y <= endRow; y++) {
             const key = `${x},${y}`;
@@ -347,7 +338,6 @@ function updateNeeds() {
     let spaceScore = Math.min(100, Math.floor((worldCount / (bCount * 2.5)) * 100));
     let resourceScore = Math.min(100, Math.floor((worldCount / (bCount * 1.5)) * 100));
     
-    // Prüft auf einsame Gebäude für den Verbindungs-Score
     let isolatedCount = 0;
     for (let [key, bldg] of buildings) {
         const [x, y] = key.split(',').map(Number);
@@ -382,7 +372,6 @@ function resizeCanvas() {
     draw();
 }
 
-// UI Buttons (Menü)
 document.getElementById('btn-new-world').addEventListener('click', () => {
     uiMenu.classList.add('hidden');
     iosDock.classList.remove('hidden');
@@ -409,7 +398,6 @@ document.getElementById('btn-menu-open').addEventListener('click', () => {
 uiInd.addEventListener('click', () => uiNeedsPanel.classList.remove('hidden'));
 document.getElementById('btn-close-needs').addEventListener('click', () => uiNeedsPanel.classList.add('hidden'));
 
-// Steuerung (Maus & Touch)
 function startDrag(x, y) { isDragging = true; hasDragged = false; dragStart = {x, y}; cameraStart = {x: camera.x, y: camera.y}; }
 function doDrag(x, y) {
     if (!isDragging || isDeciding) return;
@@ -436,5 +424,4 @@ window.addEventListener('touchend', e => {
     }
 });
 
-// INITIAL DRAW
 resizeCanvas();
