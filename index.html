@@ -4,21 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>COMMUNE</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="needs-indicator" class="status-perfect"></div>
+    <div id="main-menu" class="overlay">
+        <h1 id="title">COMMUNE</h1>
+        <div class="menu-buttons">
+            <button id="btn-new-world" class="pixel-btn large">Neue Welt</button>
+            <button id="btn-load-world" class="pixel-btn large">Welt laden</button>
+        </div>
+        <div class="menu-small-buttons">
+            <button id="btn-export" class="pixel-btn small">Exportieren</button>
+            <button id="btn-import" class="pixel-btn small">Importieren</button>
+            <input type="file" id="import-file" style="display: none;" accept=".commune">
+        </div>
+    </div>
+
+    <div id="loading-screen" class="overlay hidden">
+        <div class="loading-pattern"></div>
+    </div>
+
+    <div id="needs-indicator" class="status-100 hidden"></div>
+
+    <div id="needs-panel" class="pixel-panel hidden">
+        <h3>Zustand</h3>
+        <div class="need-row"><span>Raum:</span> <div id="bar-space" class="pixel-bar"></div></div>
+        <div class="need-row"><span>Ressourcen:</span> <div id="bar-resources" class="pixel-bar"></div></div>
+        <div class="need-row"><span>Verbindung:</span> <div id="bar-connection" class="pixel-bar"></div></div>
+        <p id="needs-hint" class="pixel-hint">Alles im Gleichgewicht.</p>
+        <button id="btn-close-needs" class="pixel-btn small">Schliessen</button>
+    </div>
+
+    <div id="merge-dialog" class="pixel-panel hidden">
+        <h3>Fremder Stamm</h3>
+        <p>Du bist auf eine fremde Zivilisation gestossen.</p>
+        <button id="btn-merge-accept" class="pixel-btn">Gene integrieren</button>
+        <button id="btn-merge-later" class="pixel-btn">Später</button>
+    </div>
 
     <div id="game-container">
         <canvas id="game-canvas"></canvas>
     </div>
 
-    <div id="action-bar">
+    <div id="action-bar" class="hidden">
         <button id="btn-explore" class="pixel-btn">ERKUNDEN</button>
-        <button id="btn-menu" class="pixel-btn">MENÜ</button>
+        <button id="btn-build" class="pixel-btn">BAUEN</button>
+        <button id="btn-menu-open" class="pixel-btn">MENÜ</button>
     </div>
 
     <script src="game.js"></script>
