@@ -10,7 +10,7 @@
 </head>
 <body>
     <div id="main-menu" class="overlay">
-        <h1 id="title">COMMUNE</h1>
+        <h1 id="title" class="cute-title">COMMUNE</h1>
         <div class="menu-buttons">
             <button id="btn-new-world" class="pixel-btn large">Neue Welt</button>
             <button id="btn-load-world" class="pixel-btn large">Welt laden</button>
@@ -22,26 +22,31 @@
         </div>
     </div>
 
-    <div id="loading-screen" class="overlay hidden">
-        <div class="loading-pattern"></div>
-    </div>
-
     <div id="needs-indicator" class="status-100 hidden"></div>
 
     <div id="needs-panel" class="pixel-panel hidden">
-        <h3>Zustand</h3>
+        <h3>Geist-Sicht</h3>
         <div class="need-row"><span>Raum:</span> <div id="bar-space" class="pixel-bar"></div></div>
         <div class="need-row"><span>Ressourcen:</span> <div id="bar-resources" class="pixel-bar"></div></div>
         <div class="need-row"><span>Verbindung:</span> <div id="bar-connection" class="pixel-bar"></div></div>
-        <p id="needs-hint" class="pixel-hint">Alles im Gleichgewicht.</p>
+        <p id="needs-hint" class="pixel-hint">Die Welt atmet ruhig.</p>
         <button id="btn-close-needs" class="pixel-btn small">Schliessen</button>
+    </div>
+
+    <div id="decision-dialog" class="pixel-panel hidden">
+        <h3 id="decision-title">Entdeckung!</h3>
+        <p id="decision-text">Du hast etwas im Nebel gefunden.</p>
+        <div class="decision-buttons">
+            <button id="btn-decision-a" class="pixel-btn">Option A</button>
+            <button id="btn-decision-b" class="pixel-btn">Option B</button>
+        </div>
     </div>
 
     <div id="merge-dialog" class="pixel-panel hidden">
         <h3>Fremder Stamm</h3>
-        <p>Du bist auf eine fremde Zivilisation gestossen.</p>
-        <button id="btn-merge-accept" class="pixel-btn">Gene integrieren</button>
-        <button id="btn-merge-later" class="pixel-btn">Später</button>
+        <p>Eine andere Siedlung. Sie grüssen friedlich.</p>
+        <button id="btn-merge-accept" class="pixel-btn">Wissen teilen</button>
+        <button id="btn-merge-later" class="pixel-btn">Beobachten</button>
     </div>
 
     <div id="game-container">
@@ -50,7 +55,6 @@
 
     <div id="ios-pixel-dock" class="hidden">
         <button id="btn-explore" class="dock-btn active">Erkunden</button>
-        <button id="btn-build" class="dock-btn">Bauen</button>
         <button id="btn-menu-open" class="dock-btn">Menü</button>
     </div>
 
