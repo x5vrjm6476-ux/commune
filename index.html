@@ -2,8 +2,9 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>COMMUNE</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -47,10 +48,10 @@
         <canvas id="game-canvas"></canvas>
     </div>
 
-    <div id="action-bar" class="hidden">
-        <button id="btn-explore" class="pixel-btn">ERKUNDEN</button>
-        <button id="btn-build" class="pixel-btn">BAUEN</button>
-        <button id="btn-menu-open" class="pixel-btn">MENÜ</button>
+    <div id="ios-pixel-dock" class="hidden">
+        <button id="btn-explore" class="dock-btn active">Erkunden</button>
+        <button id="btn-build" class="dock-btn">Bauen</button>
+        <button id="btn-menu-open" class="dock-btn">Menü</button>
     </div>
 
     <script src="game.js"></script>
