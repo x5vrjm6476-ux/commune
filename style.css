@@ -1,0 +1,101 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Press Start 2P', monospace;
+    user-select: none;
+}
+
+body {
+    background-color: #000;
+    color: #fff;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- UI ELEMENTE & OVERLAYS --- */
+.hidden { display: none !important; }
+
+.overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#title {
+    font-size: 24px;
+    margin-bottom: 40px;
+    color: #ddd;
+    text-shadow: 2px 2px 0px #555;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.menu-buttons { display: flex; flex-direction: column; gap: 20px; margin-bottom: 40px; }
+.menu-small-buttons { display: flex; gap: 15px; }
+
+/* Pixel-Panels (für Bedürfnisse und Dialoge) */
+.pixel-panel {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #222;
+    border: 4px solid #555;
+    padding: 20px;
+    z-index: 50;
+    width: 80%;
+    max-width: 300px;
+    box-shadow: 4px 4px 0px rgba(0,0,0,0.8);
+}
+
+.pixel-panel h3 { font-size: 12px; margin-bottom: 15px; border-bottom: 2px solid #555; padding-bottom: 5px; }
+.pixel-panel p { font-size: 8px; line-height: 1.5; margin-bottom: 15px; }
+
+/* Bedürfnis-Balken */
+.need-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 8px; }
+.pixel-bar { height: 8px; width: 60%; background-color: #555; position: relative; }
+.pixel-bar::after { content: ''; position: absolute; top: 0; left: 0; height: 100%; background-color: #7bc34a; width: 100%; }
+.pixel-hint { font-size: 8px; color: #aaa; margin-top: 15px; margin-bottom: 15px; font-style: italic; }
+
+/* --- BEDÜRFNIS-INDIKATOR FARBEN --- */
+#needs-indicator {
+    position: absolute; top: 16px; left: 16px; width: 12px; height: 12px;
+    z-index: 10; cursor: pointer; border: 2px solid #000;
+}
+.status-100 { background-color: #1a5c00; } /* Tiefes Grün */
+.status-75 { background-color: #7bc34a; }  /* Hellgrün */
+.status-50 { background-color: #e8c84a; }  /* Gelb */
+.status-25 { background-color: #e87a2a; }  /* Orange */
+.status-critical { background-color: #c42a0a; } /* Rot */
+
+/* --- BUTTONS --- */
+.pixel-btn {
+    background-color: #333; color: #ddd; border: 2px solid #555;
+    padding: 10px; font-size: 10px; cursor: pointer; text-transform: uppercase;
+    box-shadow: 2px 2px 0px #000;
+}
+.pixel-btn:active { box-shadow: 0px 0px 0px #000; transform: translate(2px, 2px); }
+.pixel-btn.large { font-size: 12px; padding: 15px 20px; }
+.pixel-btn.small { font-size: 8px; padding: 8px; }
+
+/* --- SPIELFLÄCHE --- */
+#game-container { flex-grow: 1; width: 100%; display: flex; }
+#game-canvas { width: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
+
+#action-bar {
+    height: 60px; width: 100%; background-color: #222; border-top: 4px solid #444;
+    display: flex; justify-content: space-around; align-items: center; padding: 0 10px; z-index: 10;
+}
+
+/* Lade-Muster */
+.loading-pattern { width: 50px; height: 50px; background-color: #7bc34a; animation: pulse 1s infinite alternate; }
+@keyframes pulse { from { transform: scale(1); opacity: 0.5; } to { transform: scale(1.2); opacity: 1; } }
