@@ -1,14 +1,14 @@
 // --- BASIS-SETUP ---
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
-const TILE_SIZE = 16; [cite: 157]
+const TILE_SIZE = 16;
 
 // Farben für Nebel und Ressourcen
-const C_FOG = '#000000'; [cite: 65]
+const C_FOG = '#000000';
 const C_LAND = '#2e4c23';
-const C_WOOD = '#5c4033'; // Braun [cite: 33]
-const C_WATER = '#1ca3ec'; // Blau [cite: 34]
-const C_STONE = '#888c8d'; // Grau [cite: 35]
+const C_WOOD = '#5c4033'; // Braun
+const C_WATER = '#1ca3ec'; // Blau
+const C_STONE = '#888c8d'; // Grau
 const C_ROAD = '#c2b280'; // Pixelige Strassen 
 
 // UI Elemente
@@ -31,7 +31,7 @@ let buildings = new Map();
 
 // --- INITIALISIERUNG & SPEICHERN ---
 function initGame() {
-    const saved = localStorage.getItem('commune_save'); [cite: 130]
+    const saved = localStorage.getItem('commune_save');
     if (saved) {
         loadGameData(JSON.parse(saved));
         uiMenu.classList.add('hidden');
@@ -44,7 +44,7 @@ function initGame() {
             }
         }
         // Erstes Gebäude in der Mitte
-        buildings.set(`0,0`, { genes: ['GEMEINSCHAFT'] }); [cite: 120]
+        buildings.set(`0,0`, { genes: ['GEMEINSCHAFT'] });
     }
     resizeCanvas();
     updateNeeds();
@@ -55,7 +55,7 @@ function saveGame() {
         world: Array.from(world.entries()),
         buildings: Array.from(buildings.entries())
     };
-    localStorage.setItem('commune_save', JSON.stringify(data)); [cite: 130]
+    localStorage.setItem('commune_save', JSON.stringify(data));
 }
 
 function loadGameData(data) {
@@ -76,15 +76,15 @@ function isAdjacent(x, y, mapToCheck) {
            mapToCheck.has(`${x},${y-1}`) || mapToCheck.has(`${x},${y+1}`);
 }
 
-// Generiert zufällige Ressourcen basierend auf Distanz zum Zentrum [cite: 79]
+// Generiert zufällige Ressourcen basierend auf Distanz zum Zentrum
 function generateResource(x, y) {
     const dist = Math.abs(x) + Math.abs(y);
     const rand = Math.random();
     
-    if (rand < 0.1 + (dist * 0.01)) return { type: 'forest', color: C_WOOD, gene: 'HOLZ' }; [cite: 71, 79]
-    if (rand < 0.2 + (dist * 0.01)) return { type: 'mountain', color: C_STONE, gene: 'STEIN' }; [cite: 73]
-    if (rand < 0.25) return { type: 'river', color: C_WATER, gene: 'WASSER' }; [cite: 72]
-    return { type: 'land', color: C_LAND }; [cite: 70]
+    if (rand < 0.1 + (dist * 0.01)) return { type: 'forest', color: C_WOOD, gene: 'HOLZ' };
+    if (rand < 0.2 + (dist * 0.01)) return { type: 'mountain', color: C_STONE, gene: 'STEIN' };
+    if (rand < 0.25) return { type: 'river', color: C_WATER, gene: 'WASSER' };
+    return { type: 'land', color: C_LAND };
 }
 
 function handleInteraction(screenX, screenY) {
@@ -93,7 +93,7 @@ function handleInteraction(screenX, screenY) {
 
     if (currentMode === 'EXPLORE') {
         if (!world.has(key) && isAdjacent(coords.x, coords.y, world)) {
-            world.set(key, generateResource(coords.x, coords.y)); [cite: 68]
+            world.set(key, generateResource(coords.x, coords.y));
             saveGame();
             draw();
         }
@@ -111,7 +111,7 @@ function handleInteraction(screenX, screenY) {
                 if (n && n.gene && !newGenes.includes(n.gene)) newGenes.push(n.gene);
             });
 
-            if (newGenes.length === 0) newGenes.push('ERDE'); // Standard-Gen [cite: 36]
+            if (newGenes.length === 0) newGenes.push('ERDE'); // Standard-Gen
 
             buildings.set(key, { genes: newGenes });
             saveGame();
@@ -126,7 +126,7 @@ function drawBuilding(x, y, bldg) {
     const screenX = camera.x + (x * TILE_SIZE);
     const screenY = camera.y + (y * TILE_SIZE);
 
-    // Basis-Farbe anhand der Gene mischen [cite: 41, 43]
+    // Basis-Farbe anhand der Gene mischen
     let baseColor = '#aa8866'; // Standard
     if (bldg.genes.includes('HOLZ')) baseColor = '#8b5a2b';
     if (bldg.genes.includes('STEIN')) baseColor = '#666666';
@@ -135,7 +135,7 @@ function drawBuilding(x, y, bldg) {
     ctx.fillStyle = baseColor;
     ctx.fillRect(screenX + 1, screenY + 1, TILE_SIZE - 2, TILE_SIZE - 2);
 
-    // Algorithmus für Pixel-Deko (Dächer/Fenster) [cite: 164, 165]
+    // Algorithmus für Pixel-Deko (Dächer/Fenster)
     // Wir nutzen x+y als einfachen deterministischen Seed
     const seed = Math.abs(x * 31 + y * 17) % 4; 
     
@@ -171,7 +171,7 @@ function drawConnections() {
 }
 
 function draw() {
-    ctx.fillStyle = C_FOG; [cite: 65]
+    ctx.fillStyle = C_FOG;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const startCol = Math.floor((-camera.x) / TILE_SIZE);
@@ -212,10 +212,10 @@ function updateNeeds() {
     const totalBuildings = buildings.size;
     let score = 100;
 
-    // Simples Bedürfnis: Wenn zu wenig Ressourcen erkundet wurden, sinkt der Score [cite: 85]
+    // Simples Bedürfnis: Wenn zu wenig Ressourcen erkundet wurden, sinkt der Score
     if (world.size < totalBuildings * 2) score -= 25;
 
-    // Farbe des Indikators anpassen [cite: 89, 94]
+    // Farbe des Indikators anpassen
     uiInd.className = '';
     if (score >= 100) uiInd.classList.add('status-100');
     else if (score >= 75) uiInd.classList.add('status-75');
@@ -258,7 +258,7 @@ btnBuild.addEventListener('click', () => {
 });
 
 uiInd.addEventListener('click', () => {
-    uiNeedsPanel.classList.remove('hidden'); [cite: 95, 96]
+    uiNeedsPanel.classList.remove('hidden');
 });
 document.getElementById('btn-close-needs').addEventListener('click', () => {
     uiNeedsPanel.classList.add('hidden');
